@@ -27,54 +27,52 @@ function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...ar
     const existing = cache.get(key);
     if (existing) return existing;
     const result = source(...args);
-    if (!isAsyncIterable(result)) {
+    if (isAsyncIterable(result)) {
+      const returning = createAsyncIterableMemo(result);
+      ok<T>(returning);
+      cache.set(key, returning);
+      return returning;
+    } else {
       cache.set(key, result);
       return result;
     }
-    const target = new Push<unknown>({
+  }
+}
+
+function createAsyncIterableMemo<T>(result: AsyncIterable<T>) {
+  let target: Push<T> | undefined = undefined;
+  async function *asyncIterable() {
+    if (target) {
+      return yield * target;
+    }
+    target = new Push<T>({
       keep: true // memo all pushed values
     });
-    ok<T & Push>(target);
-    cache.set(key, target);
-    const returning = targetAsyncIterable(result);
-    ok<T>(returning);
-    return returning;
-
-    function targetAsyncIterable(result: AsyncIterable<unknown>) {
-
-      let started = false;
-      async function *asyncIterable() {
-        if (started) {
-          return yield * target;
-        }
-        started = true;
-        try {
-          for await (const snapshot of result) {
-            target.push(snapshot);
-            yield snapshot;
-          }
-        } catch (error) {
-          target.throw(error);
-          throw await Promise.reject(error);
-        }
-        target.close();
+    try {
+      for await (const snapshot of result) {
+        target.push(snapshot);
+        yield snapshot;
       }
-
-      ok(isUnknownJSXNode(result));
-
-      return new Proxy(result, {
-        get(target, p) {
-          if (p === Symbol.asyncIterator) {
-            const iterable = asyncIterable()
-            return iterable[Symbol.asyncIterator].bind(iterable);
-          }
-          const value = result[p];
-          if (typeof value !== "function") return value;
-          return value.bind(result);
-        }
-      });
+    } catch (error) {
+      target.throw(error);
+      throw await Promise.reject(error);
     }
+    target.close();
   }
+
+  ok(isUnknownJSXNode(result));
+
+  return new Proxy(result, {
+    get(target, p) {
+      if (p === Symbol.asyncIterator) {
+        const iterable = asyncIterable()
+        return iterable[Symbol.asyncIterator].bind(iterable);
+      }
+      const value = result[p];
+      if (typeof value !== "function") return value;
+      return value.bind(result);
+    }
+  });
 }
 
 function createMemoContextFn<C, T>(
@@ -181,6 +179,10 @@ const internalMemo = createMemoFn((input?: unknown) => {
 
   if (typeof input === "function") {
     return createMemoFunction(input);
+  }
+
+  if (isAsyncIterable(input)) {
+    return createAsyncIterableMemo(input);
   }
 
   const cache = createNameMemo((input: unknown) => {
