@@ -2,11 +2,12 @@ import {
   children,
   getChildrenFromRawNode, h,
   isUnknownJSXNode,
-  name, possibleChildrenKeys,
+  name, ok, possibleChildrenKeys,
   properties,
   raw,
 } from "@virtualstate/focus";
 import { Push } from "@virtualstate/promise";
+import {isAsyncIterable} from "./is";
 
 function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...args: A) => T {
   const cache = new Map<A, T>();
@@ -26,8 +27,53 @@ function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...ar
     const existing = cache.get(key);
     if (existing) return existing;
     const result = source(...args);
-    cache.set(key, result);
-    return result;
+    if (!isAsyncIterable(result)) {
+      cache.set(key, result);
+      return result;
+    }
+    const target = new Push<unknown>({
+      keep: true // memo all pushed values
+    });
+    ok<T & Push>(target);
+    cache.set(key, target);
+    const returning = targetAsyncIterable(result);
+    ok<T>(returning);
+    return returning;
+
+    function targetAsyncIterable(result: AsyncIterable<unknown>) {
+
+      let started = false;
+      async function *asyncIterable() {
+        if (started) {
+          return yield * target;
+        }
+        started = true;
+        try {
+          for await (const snapshot of result) {
+            target.push(snapshot);
+            yield snapshot;
+          }
+        } catch (error) {
+          target.throw(error);
+          throw await Promise.reject(error);
+        }
+        target.close();
+      }
+
+      ok(isUnknownJSXNode(result));
+
+      return new Proxy(result, {
+        get(target, p) {
+          if (p === Symbol.asyncIterator) {
+            const iterable = asyncIterable()
+            return iterable[Symbol.asyncIterator].bind(iterable);
+          }
+          const value = result[p];
+          if (typeof value !== "function") return value;
+          return value.bind(result);
+        }
+      });
+    }
   }
 }
 
@@ -130,16 +176,12 @@ interface MemoComponentFn<O extends PartialOptions = PartialOptions, I = unknown
   (options: O, input?: I): R
 }
 
-export function memo<F extends MemoComponentFn>(input: F): F;
-export function memo(input?: unknown): unknown
-export function memo(input?: unknown): unknown {
+const internalMemo = createMemoFn((input?: unknown) => {
   if (!isUnknownJSXNode(input)) return input;
 
   if (typeof input === "function") {
     return createMemoFunction(input);
   }
-
-  let target: Push<unknown[]> | undefined = undefined;
 
   const cache = createNameMemo((input: unknown) => {
     const node = raw(input);
@@ -158,19 +200,17 @@ export function memo(input?: unknown): unknown {
 
   return {
     async *[Symbol.asyncIterator]() {
-      if (target) {
-        return yield* target;
-      }
-      target = new Push<unknown[]>({
-        keep: true,
-      });
       for await (const snapshot of children(input)) {
         // When we use memo we assume we own the node object
-        const yielding = snapshot.map((input) => cache(input));
-        target.push(yielding);
-        yield yielding;
+        yield snapshot.map((input) => cache(input));
       }
-      target.close();
     },
   };
+})
+
+export function memo<F extends MemoComponentFn>(input: F): F;
+export function memo<A extends AsyncIterable<unknown>>(input: A): A;
+export function memo(input?: unknown): unknown
+export function memo(input?: unknown): unknown {
+  return internalMemo(input);
 }
