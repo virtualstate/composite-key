@@ -104,16 +104,16 @@ export default 1;
     yield 1;
   }
   const node = memo(
-    <>
-      <a c b>
-        <b />
-        <Component />
-      </a>
-      <a b c>
-        <b />
-        <Component />
-      </a>
-    </>
+      <>
+        <a c b>
+          <b />
+          <Component />
+        </a>
+        <a b c>
+          <b />
+          <Component />
+        </a>
+      </>
   );
 
   console.log({ called });
@@ -183,4 +183,48 @@ export default 1;
 
   console.log(await descendants(node));
   console.log(await descendants(node));
+}
+
+{
+  let called = 0;
+  async function* Component() {
+    called += 1;
+    yield 1;
+  }
+  const node = memo(
+      <>
+        <a c b>
+          <b />
+          <Component />
+        </a>
+        <a b c>
+          <b />
+          <Component />
+        </a>
+      </>
+  );
+
+  let anotherCalled = 0;
+
+  async function *Another(options?: Record<string, unknown>, input?: unknown) {
+    anotherCalled += 1;
+    yield <another {...options}>{input}</another>
+  }
+
+  const another = (
+      <>
+        <Another a>{node}</Another>
+        <Another b>{node}</Another>
+      </>
+  )
+
+  console.log({ called, anotherCalled });
+  console.log(await descendants(another));
+  console.log({ called, anotherCalled });
+  ok(called === 1);
+  ok<unknown>(anotherCalled === 2);
+  console.log(await descendants(another));
+  console.log({ called, anotherCalled });
+  ok(called === 1);
+  ok(anotherCalled === 4);
 }
