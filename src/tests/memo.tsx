@@ -51,16 +51,16 @@ export default 1;
     yield 1;
   }
   const node = memo(
-      <>
-        <a>
-          <b />
-          <Component />
-        </a>
-        <a>
-          <b />
-          <Component />
-        </a>
-      </>
+    <>
+      <a>
+        <b />
+        <Component />
+      </a>
+      <a>
+        <b />
+        <Component />
+      </a>
+    </>
   );
 
   console.log({ called });
@@ -77,16 +77,16 @@ export default 1;
     yield 1;
   }
   const node = memo(
-      <>
-        <a a>
-          <b />
-          <Component />
-        </a>
-        <a b c>
-          <b />
-          <Component />
-        </a>
-      </>
+    <>
+      <a a>
+        <b />
+        <Component />
+      </a>
+      <a b c>
+        <b />
+        <Component />
+      </a>
+    </>
   );
 
   console.log({ called });
@@ -97,7 +97,6 @@ export default 1;
   ok(called === 2);
 }
 
-
 {
   let called = 0;
   async function* Component() {
@@ -105,16 +104,16 @@ export default 1;
     yield 1;
   }
   const node = memo(
-      <>
-        <a c b>
-          <b />
-          <Component />
-        </a>
-        <a b c>
-          <b />
-          <Component />
-        </a>
-      </>
+    <>
+      <a c b>
+        <b />
+        <Component />
+      </a>
+      <a b c>
+        <b />
+        <Component />
+      </a>
+    </>
   );
 
   console.log({ called });
@@ -131,25 +130,24 @@ export default 1;
 }
 
 {
-
   let called = 0;
   async function* Component() {
     called += 1;
     yield 1;
   }
-  const component = memo(<Component />)
+  const component = memo(<Component />);
 
   const node = memo(
-      <>
-        <a a>
-          <b />
-          {component}
-        </a>
-        <a c b>
-          <b />
-          {component}
-        </a>
-      </>
+    <>
+      <a a>
+        <b />
+        {component}
+      </a>
+      <a c b>
+        <b />
+        {component}
+      </a>
+    </>
   );
 
   console.log({ called });
@@ -158,39 +156,31 @@ export default 1;
   console.log(await descendants(node));
   console.log({ called });
   ok(called === 1);
-
-
 }
 {
+  const node = memo(
+    <>
+      <a a />
+      <a c b>
+        <b />
+      </a>
+    </>
+  );
 
-    const node = memo(
-        <>
-            <a a />
-            <a c b>
-                <b />
-            </a>
-        </>
-    );
-
-    console.log(await descendants(node));
-    console.log(await descendants(node));
-
-
+  console.log(await descendants(node));
+  console.log(await descendants(node));
 }
 {
+  const node = memo(
+    <>
+      <a a />
+      {{
+        name: "b",
+        children: 1,
+      }}
+    </>
+  );
 
-    const node = memo(
-        <>
-            <a a />
-            {{
-                name: "b",
-                children: 1
-            }}
-        </>
-    );
-
-    console.log(await descendants(node));
-    console.log(await descendants(node));
-
-
+  console.log(await descendants(node));
+  console.log(await descendants(node));
 }

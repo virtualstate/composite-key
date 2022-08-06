@@ -61,15 +61,13 @@ function createNameMemo<C, T>(
   }
 
   function getCacheKey(node: unknown) {
-    return [
-      name(name),
-      ...Object.entries(properties(node))
-          .sort(([a], [b]) => (a < b ? -1 : 1))
-          .flat(),
-    ];
+    return Object.entries(properties(node))
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .flat();
   }
 
   return (node, ...keys) => {
+    // Split the cache by node name to create quick partitions
     return getCache(node)(node, ...getCacheKey(node), ...keys);
   };
 }
