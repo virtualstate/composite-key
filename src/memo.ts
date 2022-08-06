@@ -60,8 +60,17 @@ function createNameMemo<C, T>(
     return cache;
   }
 
+  function getCacheKey(node: unknown) {
+    return [
+      name(name),
+      ...Object.entries(properties(node))
+          .sort(([a], [b]) => (a < b ? -1 : 1))
+          .flat(),
+    ];
+  }
+
   return (node, ...keys) => {
-    return getCache(node)(node, ...keys);
+    return getCache(node)(node, ...getCacheKey(node), ...keys);
   };
 }
 
@@ -81,15 +90,6 @@ export function memo(input?: unknown) {
     };
   });
 
-  function getCacheKey(node: unknown) {
-    return [
-      name(name),
-      ...Object.entries(properties(node))
-        .sort(([a], [b]) => (a < b ? -1 : 1))
-        .flat(),
-    ];
-  }
-
   return {
     async *[Symbol.asyncIterator]() {
       if (target) {
@@ -100,9 +100,7 @@ export function memo(input?: unknown) {
       });
       for await (const snapshot of children(input)) {
         // When we use memo we assume we own the node object
-        const yielding = snapshot.map((input) =>
-          cache(input, ...getCacheKey(input))
-        );
+        const yielding = snapshot.map((input) => cache(input));
         target.push(yielding);
         yield yielding;
       }
