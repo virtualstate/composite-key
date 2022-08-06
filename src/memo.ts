@@ -8,17 +8,8 @@ import {
 } from "@virtualstate/focus";
 import { Push } from "@virtualstate/promise";
 
-export interface Memo {
-  children?: typeof children;
-}
-
-function createMemo<C, T>(
-  input: (context: C, ...keys: unknown[]) => T
-): (context: C, ...keys: unknown[]) => T {
-  const cache = new Map<unknown[], T>();
-
-  type A = unknown[];
-
+function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...args: A) => T {
+  const cache = new Map<A, T>();
   function findKey(args: A) {
     for (const key of cache.keys()) {
       if (key.length !== args.length) continue;
@@ -27,35 +18,55 @@ function createMemo<C, T>(
     }
     return undefined;
   }
-
   function getKey(args: A): A {
     return findKey(args) ?? args;
   }
-
-  function call(context: C, key: A, args: A): T {
-    const result = input(context, ...args);
-    cache.set(key, result);
-    return result;
-  }
-
-  return (context, ...args: unknown[]): T => {
+  return function (...args: A): T {
     const key = getKey(args);
     const existing = cache.get(key);
     if (existing) return existing;
-    return call(context, key, args);
-  };
+    const result = source(...args);
+    cache.set(key, result);
+    return result;
+  }
+}
+
+function createMemoContextFn<C, T>(
+  input: (context: C, ...keys: unknown[]) => T
+): (context: C, ...keys: unknown[]) => T {
+  function point(...args: unknown[]) {
+    void args;
+    let value: T | undefined = undefined,
+        has = false;
+    function is(given: unknown): given is T {
+      return has;
+    }
+    return function (context: C) {
+      if (is(value)) {
+        return value;
+      }
+      const returning = input(context);
+      value = returning;
+      has = true;
+      return returning;
+    }
+  }
+  const fn = createMemoFn(point);
+  return (context, ...args): T => fn(...args)(context);
 }
 
 function createNameMemo<C, T>(
-  input: (context: C, ...keys: unknown[]) => T
+  input: (context: C, ...keys: unknown[]) => T,
+  getNameKey = name
 ): (context: C, ...keys: unknown[]) => T {
+
   const nameCache = new Map<unknown, (context: C, ...keys: unknown[]) => T>();
 
   function getCache(node: unknown) {
-    const key = name(node);
+    const key = getNameKey(node);
     const existing = nameCache.get(key);
     if (existing) return existing;
-    const cache = createMemo(input);
+    const cache = createMemoContextFn(input);
     nameCache.set(key, cache);
     return cache;
   }
@@ -78,7 +89,7 @@ const CacheSeparator = Symbol.for("@virtualstate/memo/cache/separator");
 const CacheChildSeparator = Symbol.for("@virtualstate/memo/cache/separator/child");
 
 function createMemoFunction(source: unknown) {
-  const cache = createMemo((node) => memo(node));
+  const cache = createMemoContextFn((node) => memo(node));
 
   function getChildrenCacheKey(node: unknown): unknown[] {
     const array = getChildrenFromRawNode(node);
