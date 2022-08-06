@@ -2,7 +2,7 @@ import {
   children,
   getChildrenFromRawNode,
   isUnknownJSXNode,
-  name,
+  name, possibleChildrenKeys,
   properties,
   raw,
 } from "@virtualstate/focus";
@@ -72,6 +72,8 @@ function createNameMemo<C, T>(
   };
 }
 
+const childrenKeys = new Set<unknown>(possibleChildrenKeys);
+
 export function memo(input?: unknown) {
   if (!isUnknownJSXNode(input)) return input;
   let target: Push<unknown[]> | undefined = undefined;
@@ -83,7 +85,10 @@ export function memo(input?: unknown) {
     // Must have a sync indexable tree, if not, ignore
     if (!(Array.isArray(array) && array.length)) return input;
     return {
-      ...node,
+      ...Object.fromEntries(
+          Object.entries(node)
+              .filter(([key]) => !childrenKeys.has(key))
+      ),
       children: array.map(memo),
     };
   });
