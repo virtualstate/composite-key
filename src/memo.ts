@@ -1,6 +1,6 @@
 import {
   children,
-  getChildrenFromRawNode,
+  getChildrenFromRawNode, h,
   isUnknownJSXNode,
   name, possibleChildrenKeys,
   properties,
@@ -60,22 +60,74 @@ function createNameMemo<C, T>(
     return cache;
   }
 
-  function getCacheKey(node: unknown) {
-    return Object.entries(properties(node))
-      .sort(([a], [b]) => (a < b ? -1 : 1))
-      .flat();
-  }
-
   return (node, ...keys) => {
     // Split the cache by node name to create quick partitions
-    return getCache(node)(node, ...getCacheKey(node), ...keys);
+    return getCache(node)(node, ...getPropertiesCacheKey(node), ...keys);
   };
+}
+
+function getPropertiesCacheKey(node: unknown) {
+  return Object.entries(properties(node))
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .flat();
 }
 
 const childrenKeys = new Set<unknown>(possibleChildrenKeys);
 
-export function memo(input?: unknown) {
+const CacheSeparator = Symbol.for("@virtualstate/memo/cache/separator");
+const CacheChildSeparator = Symbol.for("@virtualstate/memo/cache/separator/child");
+
+function createMemoFunction(source: unknown) {
+  const cache = createMemo((node) => memo(node));
+
+  function getChildrenCacheKey(node: unknown): unknown[] {
+    const array = getChildrenFromRawNode(node);
+    if (!(Array.isArray(array) && array.length)) return [];
+    return array.flatMap(
+        node => {
+          if (!isUnknownJSXNode(node)) return [node, CacheChildSeparator];
+          return [name(node), ...getCacheKey(node, node), CacheChildSeparator];
+        }
+    )
+  }
+
+  function getCacheKey(source: unknown, input?: unknown) {
+    return [
+      ...getPropertiesCacheKey(source),
+      CacheSeparator,
+      ...getChildrenCacheKey(input)
+    ]
+  }
+
+  return function *(options: Record<string | symbol, unknown>, input?: unknown) {
+    const snapshotOptions = {
+      ...properties(input),
+      ...options
+    };
+    const key = getCacheKey({ options }, input);
+    yield cache(
+        h(source, snapshotOptions, input),
+        ...key
+    );
+  }
+}
+
+type OptionsRecord = Record<string | symbol, unknown>
+type PartialOptions = Partial<OptionsRecord>;
+
+interface MemoComponentFn<O extends PartialOptions = PartialOptions, I = unknown, R = unknown> {
+  (options: O, input?: I): R
+}
+
+export function memo<F extends MemoComponentFn>(input: F): F;
+export function memo(input?: unknown): unknown
+export function memo(input?: unknown): unknown {
   if (!isUnknownJSXNode(input)) return input;
+
+  if (typeof input === "function") {
+    return createMemoFunction(input);
+  }
+
   let target: Push<unknown[]> | undefined = undefined;
 
   const cache = createNameMemo((input: unknown) => {

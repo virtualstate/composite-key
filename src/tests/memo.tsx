@@ -228,3 +228,285 @@ export default 1;
   ok(called === 1);
   ok(anotherCalled === 4);
 }
+
+{
+  let called = 0;
+  const Component = memo(
+      async function *(options, input) {
+        called += 1;
+        yield <component {...options}>{input}</component>
+      }
+  );
+
+  const node = (
+      <>
+        <Component />
+        <Component />
+      </>
+  );
+
+  console.log({ called });
+  console.log(await descendants(node));
+  console.log({ called });
+  console.log(await descendants(node));
+  console.log({ called });
+  ok(called === 1);
+
+}
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component />
+            <Component>
+                <a />
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 2);
+
+}
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component>
+                <a />
+            </Component>
+            <Component>
+                <b />
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 2);
+
+}
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component>
+                <a a />
+            </Component>
+            <Component>
+                <a b c />
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 2);
+
+}
+
+
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component>
+                <a c b />
+            </Component>
+            <Component>
+                <a b c />
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 1);
+
+}
+
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component>
+                <a c b />
+            </Component>
+            <Component>
+                <b b c />
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 2);
+
+}
+
+
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component a>
+                <a c b />
+            </Component>
+            <Component b>
+                <a b c />
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 2);
+
+}
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component a>
+                <a c b />
+            </Component>
+            <Component a>
+                <a b c />
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 1);
+
+}
+
+
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component a>
+                {1}
+            </Component>
+            <Component a>
+                {1}
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 1);
+
+}
+{
+    let called = 0;
+    const Component = memo(
+        async function *(options, input) {
+            called += 1;
+            yield <component {...options}>{input}</component>
+        }
+    );
+
+    const node = (
+        <>
+            <Component a>
+                {1}
+            </Component>
+            <Component a>
+                {2}
+            </Component>
+        </>
+    );
+
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    console.log(await descendants(node));
+    console.log({ called });
+    ok(called === 2);
+
+}
