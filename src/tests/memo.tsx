@@ -1,11 +1,12 @@
 import {
   h,
-  createFragment,
   children,
+  createFragment,
   descendants,
   ok,
 } from "@virtualstate/focus";
 import { memo } from "../memo";
+import { anAsyncThing } from "@virtualstate/promise/the-thing";
 
 export default 1;
 
@@ -509,4 +510,46 @@ export default 1;
     console.log({ called });
     ok(called === 2);
 
+}
+
+{
+
+    let count = 0,
+        another = 0;
+    const original = {
+        async *[Symbol.asyncIterator]() {
+            count += 1;
+            yield 1;
+            yield 2;
+        },
+        another() {
+            another += 1;
+            return this;
+        },
+        value: 1
+    };
+    const result = memo(original);
+    ok(result.another !== original.another);
+    ok(result.value === 1);
+    await anAsyncThing(result.another());
+    await anAsyncThing(result.another());
+    console.log({ count, another });
+    ok(count === 1);
+    ok(another === 1);
+}
+
+{
+    let count = 0;
+    const result = memo({
+        async *[Symbol.asyncIterator]() {
+            count += 1;
+            yield 1;
+            throw new Error()
+        }
+    });
+    let error = await anAsyncThing(result).catch(error => error);
+    ok(error instanceof Error);
+    error = await anAsyncThing(result).catch(error => error);
+    ok(error instanceof Error);
+    ok(count === 1);
 }

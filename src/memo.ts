@@ -62,6 +62,8 @@ function createAsyncIterableMemo<T>(result: AsyncIterable<T>) {
 
   ok(isUnknownJSXNode(result));
 
+  const fnCache = new WeakMap<Function, Function>();
+
   return new Proxy(result, {
     get(target, p) {
       if (p === Symbol.asyncIterator) {
@@ -70,7 +72,11 @@ function createAsyncIterableMemo<T>(result: AsyncIterable<T>) {
       }
       const value = result[p];
       if (typeof value !== "function") return value;
-      return value.bind(result);
+      const existing = fnCache.get(value);
+      if (existing) return existing;
+      const fn = createMemoFn(value.bind(result));
+      fnCache.set(value, fn);
+      return fn;
     }
   });
 }
