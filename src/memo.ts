@@ -138,7 +138,7 @@ const childrenKeys = new Set<unknown>(possibleChildrenKeys);
 const CacheSeparator = Symbol.for("@virtualstate/memo/cache/separator");
 const CacheChildSeparator = Symbol.for("@virtualstate/memo/cache/separator/child");
 
-function createMemoFunction(source: unknown) {
+function createMemoComponentFunction(source: unknown) {
   const cache = createMemoContextFn((node) => memo(node));
 
   function getChildrenCacheKey(node: unknown): unknown[] {
@@ -184,14 +184,14 @@ const internalMemo = createMemoFn((input?: unknown) => {
   if (!isUnknownJSXNode(input)) return input;
 
   if (typeof input === "function") {
-    return createMemoFunction(input);
+    return createMemoComponentFunction(input);
   }
 
   if (isAsyncIterable(input)) {
     return createAsyncIterableMemo(input);
   }
 
-  const cache = createNameMemo((input: unknown) => {
+  const cache = createNameMemo((input: unknown): unknown => {
     const node = raw(input);
     if (!isUnknownJSXNode(node)) return input;
     const array = getChildrenFromRawNode(node);
@@ -202,7 +202,7 @@ const internalMemo = createMemoFn((input?: unknown) => {
           Object.entries(node)
               .filter(([key]) => !childrenKeys.has(key))
       ),
-      children: array.map(node => internalMemo(node)),
+      children: array.map(node => memo(node)),
     };
   });
 

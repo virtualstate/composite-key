@@ -553,3 +553,63 @@ export default 1;
     ok(error instanceof Error);
     ok(count === 1);
 }
+
+{
+    let component = 0,
+        body = 0;
+    async function Component() {
+        component += 1;
+        return <section component />
+    }
+
+    async function Body() {
+        body += 1;
+        return <section body />
+    }
+
+    {
+        const tree = (
+            <>
+                <Component />
+                <main>
+                    <Body />
+                </main>
+            </>
+        );
+
+        console.log(await descendants(tree));
+        console.log({ component, body });
+        ok<unknown>(component === 1);
+        ok<unknown>(body === 1);
+
+        console.log(await descendants(tree));
+        ok(component === 2);
+        ok(body === 2);
+
+        component = 0;
+        body = 0;
+    }
+
+    {
+        const tree = memo(
+            <>
+                <Component />
+                <main>
+                    <Body />
+                </main>
+            </>
+        );
+
+        console.log(await descendants(tree));
+        console.log({ component, body });
+        ok(component === 1);
+        ok(body === 1);
+
+        console.log(await descendants(tree));
+        ok(component === 1);
+        ok(body === 1);
+
+        component = 0;
+        body = 0;
+    }
+}

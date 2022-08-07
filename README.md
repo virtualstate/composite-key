@@ -1,5 +1,7 @@
 # `@virtualstate/memo`
 
+[memo](https://github.com/tc39/proposal-function-memo) for JSX values. 
+
 [//]: # (badges)
 
 ### Support
@@ -12,5 +14,25 @@
 
 [//]: # (badges)
 
+## Usage 
 
+```typescript jsx
+import { memo } from "@virtualstate/memo";
+import { descendants } from "@virtualstate/focus";
+import { Component, Body } from "./somewhere";
 
+const tree = memo(
+    <>
+        <Component />
+        <main>
+            <Body />
+        </main>
+    </>
+);
+
+// On the first usage, the tree will be memo'd as it is read
+console.log(await descendants(tree));
+
+// Uses the memo'd version, Component & Body aren't called again
+console.log(await descendants(tree));
+```
