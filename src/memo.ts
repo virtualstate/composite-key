@@ -202,7 +202,7 @@ const internalMemo = createMemoFn((input?: unknown) => {
           Object.entries(node)
               .filter(([key]) => !childrenKeys.has(key))
       ),
-      children: array.map(memo),
+      children: array.map(node => internalMemo(node)),
     };
   });
 
@@ -210,7 +210,7 @@ const internalMemo = createMemoFn((input?: unknown) => {
     async *[Symbol.asyncIterator]() {
       for await (const snapshot of children(input)) {
         // When we use memo we assume we own the node object
-        yield snapshot.map((input) => cache(input));
+        yield snapshot.map((node) => cache(node));
       }
     },
   };
