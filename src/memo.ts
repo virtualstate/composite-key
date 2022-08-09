@@ -136,7 +136,7 @@ function getPropertiesCacheKey(node: unknown) {
 const CacheSeparator = Symbol.for("@virtualstate/memo/cache/separator");
 const CacheChildSeparator = Symbol.for("@virtualstate/memo/cache/separator/child");
 
-function getChildrenCacheKey(node: unknown): unknown[] {
+const getChildrenCacheKey = createMemoFn(function getChildrenCacheKey(node: unknown): unknown[] {
   const array = getChildrenFromRawNode(node);
   if (!(Array.isArray(array) && array.length)) return [];
   return array.flatMap(
@@ -145,15 +145,15 @@ function getChildrenCacheKey(node: unknown): unknown[] {
         return [name(node), ...getCacheKey(node), CacheChildSeparator];
       }
   )
-}
+})
 
-function getCacheKey(source: unknown, input: unknown = source) {
+const getCacheKey = createMemoFn(function getCacheKey(source: unknown, input: unknown = source) {
   return [
     ...getPropertiesCacheKey(source),
     CacheSeparator,
     ...getChildrenCacheKey(input)
   ]
-}
+})
 
 function createMemoComponentFunction(source: unknown) {
   const cache = createMemoContextFn((node) => memo(node));
