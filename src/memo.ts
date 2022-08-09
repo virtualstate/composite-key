@@ -1,6 +1,6 @@
 import {
   children,
-  getChildrenFromRawNode, h,
+  getChildrenFromRawNode, getNameKey, h, isFragment,
   isUnknownJSXNode,
   name, ok, possibleChildrenKeys,
   properties,
@@ -180,20 +180,34 @@ interface MemoComponentFn<O extends PartialOptions = PartialOptions, I = unknown
   (options: O, input?: I): R
 }
 
-const internalMemo = createMemoFn((input?: unknown) => {
-  if (!isUnknownJSXNode(input)) return input;
+const memoFn = createMemoFn((input?: unknown) => {
+  const internalMemo = createMemoFn(map);
+  const internalMemoNamed = createMemoFn(
+      createNameMemo(map)
+  );
 
-  if (typeof input === "function") {
-    return createMemoComponentFunction(input);
-  }
+  function map(input: unknown): unknown {
+    if (!isUnknownJSXNode(input)) return input;
 
-  if (isAsyncIterable(input)) {
-    return createAsyncIterableMemo(input);
-  }
+    if (typeof input === "function") {
+      return createMemoComponentFunction(input);
+    }
 
-  const cache = createNameMemo((input: unknown): unknown => {
+    if (isAsyncIterable(input)) {
+      return createAsyncIterableMemo(input);
+    }
+
+    if (isFragment(input)) {
+      return {
+        async *[Symbol.asyncIterator]() {
+          for await (const snapshot of children(input)) {
+            yield snapshot.map((node) => internalMemoNamed(node));
+          }
+        }
+      }
+    }
+
     const node = raw(input);
-    if (!isUnknownJSXNode(node)) return input;
     const array = getChildrenFromRawNode(node);
     // Must have a sync indexable tree, if not, ignore
     if (!(Array.isArray(array) && array.length)) return input;
@@ -202,23 +216,15 @@ const internalMemo = createMemoFn((input?: unknown) => {
           Object.entries(node)
               .filter(([key]) => !childrenKeys.has(key))
       ),
-      children: array.map(node => memo(node)),
+      children: array.map(node => internalMemo(node)),
     };
-  });
-
-  return {
-    async *[Symbol.asyncIterator]() {
-      for await (const snapshot of children(input)) {
-        // When we use memo we assume we own the node object
-        yield snapshot.map((node) => cache(node));
-      }
-    },
-  };
+  }
+  return internalMemo(input);
 })
 
 export function memo<F extends MemoComponentFn>(input: F): F;
 export function memo<A extends AsyncIterable<unknown>>(input: A): A;
 export function memo(input?: unknown): unknown
 export function memo(input?: unknown): unknown {
-  return internalMemo(input);
+  return memoFn(input);
 }

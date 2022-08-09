@@ -1,11 +1,11 @@
 import {
-  h,
-  children,
-  createFragment,
-  descendants,
-  ok,
+    h,
+    children,
+    createFragment,
+    descendants,
+    ok, name,
 } from "@virtualstate/focus";
-import { memo } from "../memo";
+import { memo} from "../memo";
 import { anAsyncThing } from "@virtualstate/promise/the-thing";
 
 export default 1;
@@ -612,4 +612,20 @@ export default 1;
         component = 0;
         body = 0;
     }
+}
+
+{
+    function Component() {
+        return 1;
+    }
+    const node = memo(
+        <inner>
+            <Component />
+        </inner>
+    );
+    const result = await descendants(<>{node}</>);
+    console.log(result);
+    ok(result.length === 2);
+    ok(name(result[0]) === "inner");
+    ok(result[1] === 1);
 }
