@@ -211,13 +211,23 @@ const memoFn = createMemoFn((input?: unknown) => {
     const array = getChildrenFromRawNode(node);
     // Must have a sync indexable tree, if not, ignore
     if (!(Array.isArray(array) && array.length)) return input;
-    return {
-      ...Object.fromEntries(
-          Object.entries(node)
-              .filter(([key]) => !childrenKeys.has(key))
-      ),
-      children: array.map(node => internalMemo(node)),
-    };
+
+    // return {
+    //   async *[Symbol.asyncIterator]() {
+    //     let yielded = false;
+    //     for await (const snapshot of children(
+    //         h(undefined, {}, ...array.map(node => internalMemo(node)))
+    //     )) {
+    //       yield h(name(node), properties(node), ...snapshot);
+    //       yielded = true;
+    //     }
+    //     if (!yielded) {
+    //       yield h(name(node), properties(node));
+    //     }
+    //   }
+    // }
+
+    return h(name(node), properties(node), ...array.map(node => internalMemo(node)));
   }
   return internalMemo(input);
 })
