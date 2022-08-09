@@ -9,7 +9,7 @@ import {
 import { Push } from "@virtualstate/promise";
 import {isAsyncIterable} from "./is";
 
-function createCompositeKey<A extends unknown[] = unknown[]>() {
+export function createCompositeKey<A extends unknown[] = unknown[]>() {
   const keys = new Map<number, Map<A[number], unknown>>();
 
   function getExisting(map: Map<unknown, unknown>, args: A): unknown {
