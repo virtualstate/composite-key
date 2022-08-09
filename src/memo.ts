@@ -123,7 +123,7 @@ function createNameMemo<C, T>(
 
   return (node, ...keys) => {
     // Split the cache by node name to create quick partitions
-    return getCache(node)(node, ...getPropertiesCacheKey(node), ...keys);
+    return getCache(node)(node, ...getCacheKey(node), ...keys);
   };
 }
 
@@ -133,32 +133,30 @@ function getPropertiesCacheKey(node: unknown) {
       .flat();
 }
 
-const childrenKeys = new Set<unknown>(possibleChildrenKeys);
-
 const CacheSeparator = Symbol.for("@virtualstate/memo/cache/separator");
 const CacheChildSeparator = Symbol.for("@virtualstate/memo/cache/separator/child");
 
+function getChildrenCacheKey(node: unknown): unknown[] {
+  const array = getChildrenFromRawNode(node);
+  if (!(Array.isArray(array) && array.length)) return [];
+  return array.flatMap(
+      node => {
+        if (!isUnknownJSXNode(node)) return [node, CacheChildSeparator];
+        return [name(node), ...getCacheKey(node), CacheChildSeparator];
+      }
+  )
+}
+
+function getCacheKey(source: unknown, input: unknown = source) {
+  return [
+    ...getPropertiesCacheKey(source),
+    CacheSeparator,
+    ...getChildrenCacheKey(input)
+  ]
+}
+
 function createMemoComponentFunction(source: unknown) {
   const cache = createMemoContextFn((node) => memo(node));
-
-  function getChildrenCacheKey(node: unknown): unknown[] {
-    const array = getChildrenFromRawNode(node);
-    if (!(Array.isArray(array) && array.length)) return [];
-    return array.flatMap(
-        node => {
-          if (!isUnknownJSXNode(node)) return [node, CacheChildSeparator];
-          return [name(node), ...getCacheKey(node, node), CacheChildSeparator];
-        }
-    )
-  }
-
-  function getCacheKey(source: unknown, input?: unknown) {
-    return [
-      ...getPropertiesCacheKey(source),
-      CacheSeparator,
-      ...getChildrenCacheKey(input)
-    ]
-  }
 
   return function *(options: Record<string | symbol, unknown>, input?: unknown) {
     const snapshotOptions = {
