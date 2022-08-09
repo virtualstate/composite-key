@@ -1,6 +1,6 @@
 import {
   children,
-  getChildrenFromRawNode, getNameKey, h, isFragment,
+  getChildrenFromRawNode, getNameKey, h, isFragment, isLike,
   isUnknownJSXNode,
   name, ok, possibleChildrenKeys,
   properties,
@@ -9,21 +9,60 @@ import {
 import { Push } from "@virtualstate/promise";
 import {isAsyncIterable} from "./is";
 
+function createCompositeKey<A extends unknown[] = unknown[]>() {
+  const keys = new Map<number, Map<A[number], unknown>>();
+
+  function getExisting(map: Map<unknown, unknown>, args: A): unknown {
+    return args.reduce(
+        (map, next) => {
+          if (map instanceof Map) {
+            return map.get(next)
+          }
+          return undefined;
+        },
+        map
+    );
+  }
+
+  // Is this method quicker then just going through a set and using .every on each value?
+  // A point to test on.
+  return function compositeKey(args: A): A {
+    let map = keys.get(args.length);
+    if (!map) {
+      map = new Map();
+      keys.set(args.length, map);
+    }
+
+    const found = getExisting(map, args);
+    if (isLike<A>(found)) {
+      return found;
+    }
+
+    const target = args.slice(0, -1).reduce(
+        (map: Map<unknown, unknown>, key) => {
+          const existing = map.get(key);
+          if (existing instanceof Map) {
+            return existing;
+          }
+          const next = new Map();
+          map.set(key, next);
+          return next;
+        },
+        map
+    )
+    ok(target instanceof Map);
+    target.set(args.at(-1), args);
+    return args;
+  }
+
+}
+
 function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...args: A) => T {
   const cache = new Map<A, T>();
-  function findKey(args: A) {
-    for (const key of cache.keys()) {
-      if (key.length !== args.length) continue;
-      const match = key.every((value, index) => args[index] === value);
-      if (match) return key;
-    }
-    return undefined;
-  }
-  function getKey(args: A): A {
-    return findKey(args) ?? args;
-  }
+  const compositeKey = createCompositeKey<A>();
+
   return function (...args: A): T {
-    const key = getKey(args);
+    const key = compositeKey(args);
     const existing = cache.get(key);
     if (existing) return existing;
     const result = source(...args);
