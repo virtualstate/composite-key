@@ -8,58 +8,11 @@ import {
 } from "@virtualstate/focus";
 import { Push } from "@virtualstate/promise";
 import {isAsyncIterable} from "./is";
-
-export function createCompositeKey<A extends unknown[] = unknown[]>() {
-  const keys = new Map<number, Map<A[number], unknown>>();
-
-  function getExisting(map: Map<unknown, unknown>, args: A): unknown {
-    return args.reduce(
-        (map, next) => {
-          if (map instanceof Map) {
-            return map.get(next)
-          }
-          return undefined;
-        },
-        map
-    );
-  }
-
-  // Is this method quicker then just going through a set and using .every on each value?
-  // A point to test on.
-  return function compositeKey(args: A): A {
-    let map = keys.get(args.length);
-    if (!map) {
-      map = new Map();
-      keys.set(args.length, map);
-    }
-
-    const found = getExisting(map, args);
-    if (isLike<A>(found)) {
-      return found;
-    }
-
-    const target = args.slice(0, -1).reduce(
-        (map: Map<unknown, unknown>, key) => {
-          const existing = map.get(key);
-          if (existing instanceof Map) {
-            return existing;
-          }
-          const next = new Map();
-          map.set(key, next);
-          return next;
-        },
-        map
-    )
-    ok(target instanceof Map);
-    target.set(args.at(-1), args);
-    return args;
-  }
-
-}
+import {createCompositeKey} from "./composite";
 
 function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...args: A) => T {
-  const cache = new Map<A, T>();
-  const compositeKey = createCompositeKey<A>();
+  const cache = new WeakMap<object, T>();
+  const compositeKey = createCompositeKey();
 
   return function (...args: A): T {
     const key = compositeKey(args);
