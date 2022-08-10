@@ -15,7 +15,7 @@ function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...ar
   const compositeKey = createCompositeKey();
 
   return function (...args: A): T {
-    const key = compositeKey(args);
+    const key = compositeKey(...args);
     const existing = cache.get(key);
     if (existing) return existing;
     const result = source(...args);

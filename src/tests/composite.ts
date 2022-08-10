@@ -5,7 +5,7 @@ import {ok} from "@virtualstate/focus";
     const compositeKey = createCompositeKey();
 
     ok(
-        compositeKey([]) === compositeKey([])
+        compositeKey() === compositeKey()
     );
 }
 {
@@ -13,21 +13,18 @@ import {ok} from "@virtualstate/focus";
 
     const random = Math.random();
     ok(
-        compositeKey([random]) === compositeKey([random])
+        compositeKey(random) === compositeKey(random)
     );
 }
 {
     const compositeKey = createCompositeKey();
 
     const random = Math.random();
-    const a = [random];
-    const b = [random];
-    const key = compositeKey(a);
+    const key = compositeKey(random);
 
     ok(typeof key === "object");
-    ok(key === compositeKey(a));
-    ok(key === compositeKey(b));
-    ok(compositeKey(a) === compositeKey(b));
+    ok(key === compositeKey(random));
+    ok(compositeKey(random) === compositeKey(random));
 }
 
 
@@ -35,7 +32,7 @@ import {ok} from "@virtualstate/focus";
     const compositeSymbol = createCompositeSymbol();
 
     ok(
-        compositeSymbol([]) === compositeSymbol([])
+        compositeSymbol() === compositeSymbol()
     );
 }
 {
@@ -43,21 +40,18 @@ import {ok} from "@virtualstate/focus";
 
     const random = Math.random();
     ok(
-        compositeSymbol([random]) === compositeSymbol([random])
+        compositeSymbol(random) === compositeSymbol(random)
     );
 }
 {
     const compositeSymbol = createCompositeSymbol();
 
     const random = Math.random();
-    const a = [random];
-    const b = [random];
-    const key = compositeSymbol(a);
+    const key = compositeSymbol(random);
 
     ok(typeof key === "symbol");
-    ok(key === compositeSymbol(a));
-    ok(key === compositeSymbol(b));
-    ok(compositeSymbol(a) === compositeSymbol(b));
+    ok(key === compositeSymbol(random));
+    ok(compositeSymbol(random) === compositeSymbol(random));
 }
 
 {
@@ -65,13 +59,10 @@ import {ok} from "@virtualstate/focus";
     const compositeSymbol = createCompositeSymbol();
 
     const random = `${Math.random()}`;
-    const a = [random];
-    const b = [random];
-    const key = compositeSymbol(a);
+    const key = compositeSymbol(random);
 
     ok(typeof key === "symbol");
-    ok(key === compositeSymbol(a));
-    ok(key === compositeSymbol(b));
-    ok(compositeSymbol(a) === compositeSymbol(b));
+    ok(key === compositeSymbol(random));
+    ok(compositeSymbol(random) === compositeSymbol(random));
     ok(Symbol.for(random) === key);
 }
