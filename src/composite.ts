@@ -90,9 +90,8 @@ export function createCompositeKey() {
 
 export function createCompositeSymbol() {
     return createCompositeValue((parts) => {
-        const last = parts.at(-1);
-        if (typeof last === "string") {
-            return Symbol.for(last);
+        if (parts.length === 1 && typeof parts[0] === "string") {
+            return Symbol.for(parts[0]);
         }
         return Symbol();
     });
