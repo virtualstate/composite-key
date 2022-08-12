@@ -14,11 +14,11 @@ function createMemoFn<A extends unknown[], T>(source: (...args: A) => T): (...ar
   const cache = new WeakMap<object, T>();
   const compositeKey = createCompositeKey();
 
-  return function (...args: A): T {
-    const key = compositeKey(...args);
+  return function (this: unknown, ...args: A): T {
+    const key = compositeKey(this, source.call, ...args);
     const existing = cache.get(key);
     if (existing) return existing;
-    const result = source(...args);
+    const result = source.call(this, ...args);
     if (isAsyncIterable(result)) {
       const returning = createAsyncIterableMemo(result);
       ok<T>(returning);
