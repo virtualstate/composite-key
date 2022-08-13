@@ -1,6 +1,6 @@
 import {
   children,
-  getChildrenFromRawNode, getNameKey, h, isFragment, isLike,
+  getChildrenFromRawNode, getNameKey, h, isComponentFn, isFragment, isLike,
   isUnknownJSXNode,
   name, ok, possibleChildrenKeys,
   properties,
@@ -98,14 +98,13 @@ function createMemoContextFn<C, T>(
 }
 
 function createNameMemo<C, T>(
-  input: (context: C, ...keys: unknown[]) => T,
-  getNameKey = name
+  input: (context: C, ...keys: unknown[]) => T
 ): (context: C, ...keys: unknown[]) => T {
 
   const nameCache = new Map<unknown, (context: C, ...keys: unknown[]) => T>();
 
   function getCache(node: unknown) {
-    const key = getNameKey(node);
+    const key = getNameCacheKey(node);
     const existing = nameCache.get(key);
     if (existing) return existing;
     const cache = createMemoContextFn(input);
@@ -128,13 +127,20 @@ function getPropertiesCacheKey(node: unknown) {
 const CacheSeparator = Symbol.for("@virtualstate/memo/cache/separator");
 const CacheChildSeparator = Symbol.for("@virtualstate/memo/cache/separator/child");
 
+function getNameCacheKey(input: unknown) {
+  const node = raw(input);
+  const value = node[getNameKey(node)];
+  if (!isComponentFn(value)) return name(input);
+  return value;
+}
+
 const getChildrenCacheKey = createMemoFn(function getChildrenCacheKey(node: unknown): unknown[] {
   const array = getChildrenFromRawNode(node);
   if (!(Array.isArray(array) && array.length)) return [];
   return array.flatMap(
       node => {
         if (!isUnknownJSXNode(node)) return [node, CacheChildSeparator];
-        return [name(node), ...getCacheKey(node), CacheChildSeparator];
+        return [getNameCacheKey(node), ...getCacheKey(node), CacheChildSeparator];
       }
   )
 })
