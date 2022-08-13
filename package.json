@@ -1,6 +1,6 @@
 {
   "name": "@virtualstate/memo",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "main": "./esnext/index.js",
   "module": "./esnext/index.js",
   "types": "./esnext/index.d.ts",
