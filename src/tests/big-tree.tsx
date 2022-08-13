@@ -2,7 +2,7 @@ import {children, descendants, h, ok} from "@virtualstate/focus";
 import {memo} from "../memo";
 
 const base = Array.from({ length: 5 }, () => {
-    return async function *() {
+    return async function *Base() {
         yield 1;
         yield 2;
         yield 3;
@@ -18,21 +18,21 @@ const base = Array.from({ length: 5 }, () => {
     }
 }).map(Node => <Node />);
 const next1 = Array.from({ length: 5 }, () => {
-    return async function *(options: unknown, input?: unknown) {
+    return async function *Next1(options: unknown, input?: unknown) {
         for await (const snapshot of children(input)) {
             yield snapshot.map(value => (<next>{value}</next>))
         }
     }
 }).map(Node => <Node>{...base}</Node>);
 const next2 = Array.from({ length: 15 }, () => {
-    return async function *(options: unknown, input?: unknown) {
+    return async function *Next2(options: unknown, input?: unknown) {
         for await (const snapshot of children(input)) {
             yield snapshot.map(value => (<next>{value}</next>))
         }
     }
 }).map(Node => <Node>{...next1}</Node>);
 const top = Array.from({ length: 5 }, () => {
-    return async function *(options: unknown, input?: unknown) {
+    return async function *Top(options: unknown, input?: unknown) {
         for await (const snapshot of children(input)) {
             yield snapshot.map(value => (<next>{value}</next>))
         }
