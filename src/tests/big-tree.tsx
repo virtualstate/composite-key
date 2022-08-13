@@ -6,15 +6,15 @@ const base = Array.from({ length: 5 }, () => {
         yield 1;
         yield 2;
         yield 3;
-        yield 1;
-        yield 2;
-        yield 3;
-        yield 1;
-        yield 2;
-        yield 3;
-        yield 1;
-        yield 2;
-        yield 3;
+        // yield 1;
+        // yield 2;
+        // yield 3;
+        // yield 1;
+        // yield 2;
+        // yield 3;
+        // yield 1;
+        // yield 2;
+        // yield 3;
     }
 }).map(Node => <Node />);
 const next1 = Array.from({ length: 5 }, () => {

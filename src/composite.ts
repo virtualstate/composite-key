@@ -84,6 +84,26 @@ function createCompositeValue<T>(fn: (parts: unknown[]) => T) {
 
 }
 
+export function createSillyCompositeKey<A extends unknown[] = unknown[]>() {
+    const keys = new Map<number, Set<A>>();
+
+    return function compositeKey(...args: A): A {
+        let set = keys.get(args.length);
+        if (!set) {
+            set = new Set();
+            keys.set(args.length, set);
+        }
+        for (const key of set) {
+            const match = key.every((value, index) => args[index] === value);
+            if (match) {
+                return key;
+            }
+        }
+        set.add(args);
+        return args;
+    }
+}
+
 export function createCompositeKey() {
     return createCompositeValue(() => Object.freeze({__proto__:null}));
 }
