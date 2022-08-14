@@ -529,23 +529,6 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@opennetwork/http-representation@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@opennetwork/http-representation/-/http-representation-3.0.0.tgz#5665ee2a5900dc53cff207aef491144bed0ce32f"
-  integrity sha512-g3davRpiR4m9vMhEtocjiENRBgJRnzNd9tWmO2b9E0z9Je5iVmMuzLvTqdP0p+Ew9RIbIEaC+ayEalIkLVgKOQ==
-
-"@opennetwork/linked-list@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@opennetwork/linked-list/-/linked-list-4.0.0.tgz#69e25d0b00387f00da91faea2a5b77897d920712"
-  integrity sha512-aMEXPA0y3FZd5IlPPNVLHf5jxwNE9bo6d+5OgCsqZhRilftUuaytEnAS+7ggjiPekAtVDFl2okYROqtL3f02+g==
-
-"@opennetwork/rdf-data-model@^6.2.0":
-  version "6.2.0"
-  resolved "https://registry.npmjs.org/@opennetwork/rdf-data-model/-/rdf-data-model-6.2.0.tgz#f30558caf52d693edcb8b1b807f6fa9abc6d047c"
-  integrity sha512-yXQTkN85/5WIhKaeKFwC+4t/CfF4mEMcMQus82+0RG6Bpvp4qAX5xqY+mX/y+m7x+1mDpH44mtGtUH+ZnteliQ==
-  dependencies:
-    pure-uuid "^1.6.0"
-
 "@sideway/address@^4.1.0":
   version "4.1.2"
   resolved "https://registry.npmjs.org/@sideway/address/-/address-4.1.2.tgz#811b84333a335739d3969cfc434736268170cad1"
@@ -766,89 +749,10 @@
   dependencies:
     "@types/node" "*"
 
-"@virtualstate/dom@^2.46.0":
-  version "2.46.0"
-  resolved "https://registry.npmjs.org/@virtualstate/dom/-/dom-2.46.0.tgz#e8e4cd9f1bef09bf39dc04ccc3374275097a3336"
-  integrity sha512-29HUXJXsmqYaoZuYlmPZIs0AvhtoLoh+z62dKuO3/EoF9h0aiq2gJKxq8gOvNewFVYbT34c4+H7CtQAWonj89w==
-  dependencies:
-    "@virtualstate/fringe" "^2.46.0"
-    "@virtualstate/hooks" "^2.46.0"
-    "@virtualstate/union" "^2.46.0"
-    "@virtualstate/x" "^2.46.0"
-    iterable "^5.6.0"
-    microtask-collector "^3.1.0"
-
-"@virtualstate/examples@^2.46.0":
-  version "2.46.0"
-  resolved "https://registry.npmjs.org/@virtualstate/examples/-/examples-2.46.0.tgz#41ad5b0501874a2c0c0cc390feda4d559fac2b4b"
-  integrity sha512-fD3qoxYYhjS2POLv54CLr0B2IOo8OctFrf/42GpbOtOrjaUzqGrqsQz7J7tViQIFhqwoPCS0hYoOs0gSQ2Bt+A==
-  dependencies:
-    "@opennetwork/rdf-data-model" "^6.2.0"
-    "@virtualstate/fringe" "^2.46.0"
-    "@virtualstate/hooks" "^2.46.0"
-    "@virtualstate/hooks-extended" "^2.46.0"
-    "@virtualstate/union" "^2.46.0"
-    "@virtualstate/x" "^2.46.0"
-    iterable "^5.6.0"
-    microtask-collector "^3.1.0"
-
-"@virtualstate/focus@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@virtualstate/focus/-/focus-1.1.1.tgz#9f162d9a54d8431e692657c26f0da39748666593"
-  integrity sha512-GZhxaSTQv78Eq20HiSReML2sgeQFxUubitmiQlcW8z5V3IMkEQUUq12pe42UE6gF1ysI77llzTtPxOru2jwkew==
-
-"@virtualstate/fringe@^2.46.0":
-  version "2.46.0"
-  resolved "https://registry.npmjs.org/@virtualstate/fringe/-/fringe-2.46.0.tgz#f8efe290f5f98ea9a1da6d2de8264435583af9c3"
-  integrity sha512-kSwiiSTv0i2ht3MtM+RtOzDUJTLDW1RJpYSnRQTY56g5zvCdn+kFhEyPiE1ryvh99Jme9BXiCo6uzzB/8zihCw==
-
-"@virtualstate/fringe@^2.46.1":
-  version "2.46.1"
-  resolved "https://registry.npmjs.org/@virtualstate/fringe/-/fringe-2.46.1.tgz#27d1034f355a260aaa6d536d7f27626faf3c1847"
-  integrity sha512-s2GSeCN7w5LDSXhUqQR9pGasSuyDHbkIt5ECUcFb563f++BjC6nvE0RPpQ1VxCSWvTuOATIhawRZ9JUWAB0PyA==
-
-"@virtualstate/hooks-extended@^2.46.0":
-  version "2.46.0"
-  resolved "https://registry.npmjs.org/@virtualstate/hooks-extended/-/hooks-extended-2.46.0.tgz#57958b038b82dcd3e52f26f1fc6589de4a3d14ad"
-  integrity sha512-JdvqZff9MRy9qZc+624R8nlJqABh/yQh79VmCUZkqs11lUBGMc6oClDfphxtKoRkoBCeb0It90G5Owu+xl+j8w==
-
-"@virtualstate/hooks@^2.46.0":
-  version "2.46.0"
-  resolved "https://registry.npmjs.org/@virtualstate/hooks/-/hooks-2.46.0.tgz#7dde6849f234d9c0ebe7bb30b3c239e5880ac1d2"
-  integrity sha512-KUTIxVSbU6JWmc6EkTiVsdymsSDGmxOtu7l0FoEwR8saq7e2dIjJfPO1UU7YJdjX+Di4gqjGY+BaEkDgq44+NA==
-
-"@virtualstate/promise@^1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@virtualstate/promise/-/promise-1.1.6.tgz#6db3b498b50bb9c0e0b3a0c875e614f61dfbb65f"
-  integrity sha512-VUHoq3pTT+xczVlBDhMqSp74UguETb+Qu2qBgDHWPLT49Bl4JhmPTLw/unaYaXb+4YaE5mEaxjmvAhY4C1oc9A==
-
-"@virtualstate/union@^2.46.0":
-  version "2.46.0"
-  resolved "https://registry.npmjs.org/@virtualstate/union/-/union-2.46.0.tgz#46298cb39dedd4cede6d18085d75383d4173a528"
-  integrity sha512-B7Vy4DKoad7ibsaT6Kdjg6aN7N9CGYSxXPwGWuudE483E4tei8qdjdFzkCLPJwbvBSRiWMFsNIk0trxkX/W0qw==
-
-"@virtualstate/x@^2.46.0":
-  version "2.46.0"
-  resolved "https://registry.npmjs.org/@virtualstate/x/-/x-2.46.0.tgz#53d8fbccda039ea2a4a3618fb1345e8b6f2377b4"
-  integrity sha512-PjdCUCZhYeKuVncpnHL+CKXFOEt1S3mZdNMwK4zjPBIJhU47oD7+gGT6ykhb8MGDJqrecSuYhDohrpIRILfTiw==
-  dependencies:
-    "@virtualstate/fringe" "^2.46.0"
-    "@virtualstate/hooks" "^2.46.0"
-    "@virtualstate/union" "^2.46.0"
-    iterable "^5.6.0"
-    microtask-collector "^3.1.0"
-
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.5"
   resolved "https://registry.npmjs.org/abab/-/abab-2.0.5.tgz#c0b678fb32d60fc1219c784d6a826fe385aeb79a"
   integrity sha512-9IK9EadsbHo6jLWIpxpR6pL0sazTXV6+SQv25ZB+F7Bj9mJNaOc4nCRabwd5M/JwmUa8idz6Eci6eKfJryPs6Q==
-
-abort-controller@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/abort-controller/-/abort-controller-3.0.0.tgz#eaf54d53b62bae4138e809ca225c8439a6efb392"
-  integrity sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==
-  dependencies:
-    event-target-shim "^5.0.0"
 
 acorn-globals@^6.0.0:
   version "6.0.0"
@@ -1572,11 +1476,6 @@ esutils@^2.0.2:
   resolved "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-event-target-shim@^5.0.0:
-  version "5.0.1"
-  resolved "https://registry.npmjs.org/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
-  integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
-
 execa@^5.0.0:
   version "5.1.1"
   resolved "https://registry.npmjs.org/execa/-/execa-5.1.1.tgz#f80ad9cbf4298f7bd1d4c9555c21e93741c411dd"
@@ -2108,11 +2007,6 @@ istanbul-reports@^3.1.4:
   dependencies:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
-
-iterable@^5.6.0:
-  version "5.7.0"
-  resolved "https://registry.npmjs.org/iterable/-/iterable-5.7.0.tgz#6937296d3380c227f55fd5ca299e41a821d573f7"
-  integrity sha512-xLERMG+ha4eAxSkms2iaJbjFW5V2uB8vFZVq6Kh+YwPax29IwMTdOIOoieeXOu6+nV0+xe82i2H346RLvsyigA==
 
 jest-changed-files@^27.1.0:
   version "27.1.0"
@@ -2708,13 +2602,6 @@ micromatch@^4.0.4:
     braces "^3.0.1"
     picomatch "^2.2.3"
 
-microtask-collector@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/microtask-collector/-/microtask-collector-3.1.0.tgz#a2ab49c1d5ea436ecaed027373b8a19a53b84f79"
-  integrity sha512-hqriS8rmSdcrnyxY8c1yA7Zb1PKLEQxxm1A5d53ZzxaMSpOWbW98zdKnjtJU6BCSANCu5C3rfcyxldXcTUQS9w==
-  dependencies:
-    "@opennetwork/linked-list" "^4.0.0"
-
 mime-db@1.49.0:
   version "1.49.0"
   resolved "https://registry.npmjs.org/mime-db/-/mime-db-1.49.0.tgz#f3dfde60c99e9cf3bc9701d687778f537001cbed"
@@ -3125,11 +3012,6 @@ punycode@^2.1.1:
   version "2.1.1"
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
-
-pure-uuid@^1.6.0:
-  version "1.6.2"
-  resolved "https://registry.npmjs.org/pure-uuid/-/pure-uuid-1.6.2.tgz#64f3032d54953b93b0585be3263a2629f1d60a04"
-  integrity sha512-WQ4xz74ApW6s0BToRuuyuMo9g0VHx1HljY0H2gPng+mqqz/K1yLj7sHZonZZQ2++WfHl/ZzruilWvuz+WtmxjQ==
 
 react-is@^17.0.1:
   version "17.0.2"
@@ -3677,14 +3559,6 @@ whatwg-url@^8.0.0, whatwg-url@^8.5.0:
   integrity sha512-gAojqb/m9Q8a5IV96E3fHJM70AzCkgt4uXYX2O7EmuyOnLrViCQlsEBmF9UQIu3/aeAIp2U17rtbpZWNntQqdg==
   dependencies:
     lodash "^4.7.0"
-    tr46 "^2.1.0"
-    webidl-conversions "^6.1.0"
-
-whatwg-url@^9.1.0:
-  version "9.1.0"
-  resolved "https://registry.npmjs.org/whatwg-url/-/whatwg-url-9.1.0.tgz#1b112cf237d72cd64fa7882b9c3f6234a1c3050d"
-  integrity sha512-CQ0UcrPHyomtlOCot1TL77WyMIm/bCwrJ2D6AOKGwEczU9EpyoqAokfqrf/MioU9kHcMsmJZcg1egXix2KYEsA==
-  dependencies:
     tr46 "^2.1.0"
     webidl-conversions "^6.1.0"
 

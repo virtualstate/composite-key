@@ -1,5 +1,4 @@
-import {isLike, ok} from "@virtualstate/focus";
-
+import { isLike, ok } from "./is";
 
 type ObjectLike = object | Function;
 
@@ -84,8 +83,11 @@ function createCompositeValue<T>(fn: (parts: unknown[]) => T) {
 
 }
 
+
+type CompositeObjectKey = Readonly<{ __proto__: null }>;
+
 export function createCompositeKey() {
-    return createCompositeValue(() => Object.freeze({__proto__:null}));
+    return createCompositeValue((): CompositeObjectKey => Object.freeze({__proto__:null}));
 }
 
 export function createCompositeSymbol() {
@@ -95,4 +97,24 @@ export function createCompositeSymbol() {
         }
         return Symbol();
     });
+}
+
+export type CompositeKeyFn = ReturnType<typeof createCompositeKey>;
+export type CompositeSymbolFn = ReturnType<typeof createCompositeSymbol>;
+
+let internalCompositeKey: CompositeKeyFn | undefined = undefined;
+let internalCompositeSymbol: CompositeSymbolFn | undefined = undefined;
+
+export function compositeKey(...parts: unknown[]): CompositeObjectKey {
+    if (!internalCompositeKey) {
+        internalCompositeKey = createCompositeKey();
+    }
+    return internalCompositeKey(...parts);
+}
+
+export function compositeSymbol(...parts: unknown[]): symbol {
+    if (!internalCompositeSymbol) {
+        internalCompositeSymbol = createCompositeSymbol();
+    }
+    return internalCompositeSymbol(...parts);
 }
